@@ -1,8 +1,9 @@
 import data from "../data/dataAccess.js";
 import DailyView from "./DailyView.jsx";
+import TaskRail from "./TaskRail.jsx";
 
-// The authenticated app shell. Phase 1: hosts the daily-note editor. The task
-// rail and calendar land beside it in later phases.
+// The authenticated app shell. Phase 1: daily-note editor. Phase 2: task rail
+// beside it. The calendar lands to the right of the rail in Phase 3.
 export default function Shell({ user, onLogout }) {
   async function handleLogout() {
     await data.logout();
@@ -24,9 +25,14 @@ export default function Shell({ user, onLogout }) {
         </div>
       </header>
 
-      <main className="mx-auto min-h-0 w-full max-w-3xl flex-1">
-        <DailyView />
-      </main>
+      <div className="flex min-h-0 flex-1">
+        <main className="min-w-0 flex-1">
+          <div className="mx-auto h-full max-w-3xl">
+            <DailyView />
+          </div>
+        </main>
+        <TaskRail />
+      </div>
     </div>
   );
 }

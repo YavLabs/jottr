@@ -15,6 +15,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from .api.attachments import router as attachments_router
 from .api.notes import router as notes_router
+from .api.tasks import router as tasks_router
 from .auth.routes import router as auth_router
 from .config import get_settings
 from .index.db import connect, init_schema
@@ -39,6 +40,7 @@ app.add_middleware(SessionMiddleware, secret_key=settings.jwt_secret, same_site=
 
 app.include_router(auth_router)
 app.include_router(notes_router)
+app.include_router(tasks_router)
 app.include_router(attachments_router)
 
 _watcher: IndexWatcher | None = None

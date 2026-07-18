@@ -18,6 +18,22 @@ CREATE VIRTUAL TABLE IF NOT EXISTS notes_fts USING fts5(
     mtime UNINDEXED,
     tokenize = 'porter unicode61'
 );
+
+CREATE TABLE IF NOT EXISTS tasks (
+    path            TEXT NOT NULL,
+    line            INTEGER NOT NULL,
+    text            TEXT NOT NULL,
+    done            INTEGER NOT NULL,
+    due             TEXT,
+    effective_date  TEXT,
+    priority        TEXT,
+    tags            TEXT,   -- JSON array
+    recurrence      TEXT,
+    kind            TEXT,
+    PRIMARY KEY (path, line)
+);
+CREATE INDEX IF NOT EXISTS idx_tasks_done ON tasks(done);
+CREATE INDEX IF NOT EXISTS idx_tasks_effective ON tasks(effective_date);
 """
 
 

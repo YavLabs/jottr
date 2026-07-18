@@ -93,6 +93,31 @@ export async function search(query, limit = 30) {
   return request(`/search?${params.toString()}`);
 }
 
+// --- Tasks ----------------------------------------------------------------
+
+export async function listTasks(view = "open", { tag, limit } = {}) {
+  const params = new URLSearchParams({ view });
+  if (tag) params.set("tag", tag);
+  if (limit) params.set("limit", String(limit));
+  return request(`/tasks?${params.toString()}`);
+}
+
+export async function taskCounts() {
+  return request("/tasks/counts");
+}
+
+export async function toggleTask(path, line, done) {
+  return request("/tasks/toggle", { method: "POST", body: { path, line, done } });
+}
+
+export async function addTask({ text, due, priority }) {
+  return request("/tasks/add", { method: "POST", body: { text, due, priority } });
+}
+
+export async function rolloverTasks() {
+  return request("/tasks/rollover", { method: "POST" });
+}
+
 // --- Attachments ----------------------------------------------------------
 
 export async function uploadAttachment(file) {
@@ -126,6 +151,11 @@ export default {
   deleteNote,
   getDaily,
   search,
+  listTasks,
+  taskCounts,
+  toggleTask,
+  addTask,
+  rolloverTasks,
   uploadAttachment,
   saveInk,
   attachmentUrl,

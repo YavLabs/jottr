@@ -9,9 +9,9 @@ services:
       - jottr_data:/data
     environment:
       # Public URL of the app (used to build the OAuth redirect URI).
-      JOTTR_BASE_URL: "http://localhost:8000"
-      # Sign the session cookie. CHANGE THIS.
-      JOTTR_JWT_SECRET: "change-me-to-a-long-random-string"
+      JOTTR_BASE_URL: "${JOTTR_BASE_URL:-http://localhost:8000}"
+      # Sign the session cookie. Set a real value in .env (see .env.example).
+      JOTTR_JWT_SECRET: "${JOTTR_JWT_SECRET:-change-me-to-a-long-random-string}"
       # --- Google OAuth (leave blank to use the built-in dev login) ---
       JOTTR_GOOGLE_CLIENT_ID: "${JOTTR_GOOGLE_CLIENT_ID:-}"
       JOTTR_GOOGLE_CLIENT_SECRET: "${JOTTR_GOOGLE_CLIENT_SECRET:-}"

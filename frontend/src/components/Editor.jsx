@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Crepe } from "@milkdown/crepe";
 import { insert } from "@milkdown/kit/utils";
+import { mermaidPlugin } from "../editor/mermaidPlugin.js";
 import "@milkdown/crepe/theme/common/style.css";
 import "@milkdown/crepe/theme/nord.css";
 
@@ -33,6 +34,8 @@ export default function Editor({ initialValue = "", onChange, onReady, onEditInk
     const host = rootRef.current;
 
     const crepe = new Crepe({ root: host, defaultValue: initialValue });
+    // Live Mermaid preview under ```mermaid fences (added before create()).
+    crepe.editor.use(mermaidPlugin);
     crepe.on((listener) => {
       listener.markdownUpdated((_ctx, markdown) => onChangeRef.current?.(markdown));
     });

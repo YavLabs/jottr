@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+/* Light + dark theme come free from Tailwind's `dark:` variants, driven by the
+   OS preference. A manual toggle lands in Phase 7 (PWA polish). */
+
+:root {
+  color-scheme: light dark;
+}
+
+html,
+body {
+  height: 100%;
+}

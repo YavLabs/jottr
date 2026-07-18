@@ -1,0 +1,13 @@
+**/node_modules
+**/dist
+**/__pycache__
+**/*.pyc
+.venv
+venv
+.git
+.env
+data/
+frontend/node_modules
+frontend/dist
+*.log
+.DS_Store

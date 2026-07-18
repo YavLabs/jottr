@@ -1,7 +1,8 @@
 import data from "../data/dataAccess.js";
+import DailyView from "./DailyView.jsx";
 
-// The authenticated app shell. Empty for Phase 0 — the daily-note editor,
-// task rail and calendar all land in later phases inside this frame.
+// The authenticated app shell. Phase 1: hosts the daily-note editor. The task
+// rail and calendar land beside it in later phases.
 export default function Shell({ user, onLogout }) {
   async function handleLogout() {
     await data.logout();
@@ -23,12 +24,8 @@ export default function Shell({ user, onLogout }) {
         </div>
       </header>
 
-      <main className="flex flex-1 items-center justify-center p-8">
-        <div className="text-center">
-          <p className="text-slate-400 dark:text-slate-500">
-            Empty workspace. The daily note lands in Phase 1.
-          </p>
-        </div>
+      <main className="mx-auto min-h-0 w-full max-w-3xl flex-1">
+        <DailyView />
       </main>
     </div>
   );

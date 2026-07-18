@@ -13,8 +13,15 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
+from .api.attachments import router as attachments_router
+from .api.notes import router as notes_router
 from .auth.routes import router as auth_router
 from .config import get_settings
+from .index.db import connect, init_schema
+from .index.indexer import Indexer
+from .index.watcher import IndexWatcher
+from .runtime import set_runtime
+from .storage.notes import NoteStore
 
 logging.basicConfig(
     level=logging.INFO,
@@ -31,10 +38,15 @@ app = FastAPI(title="Jottr", version="0.0.1")
 app.add_middleware(SessionMiddleware, secret_key=settings.jwt_secret, same_site="lax")
 
 app.include_router(auth_router)
+app.include_router(notes_router)
+app.include_router(attachments_router)
+
+_watcher: IndexWatcher | None = None
 
 
 @app.on_event("startup")
 def _startup() -> None:
+    global _watcher
     settings.ensure_volume()
     log.info("Data volume ready at %s", settings.data_dir.resolve())
     if not settings.google_configured:
@@ -42,6 +54,24 @@ def _startup() -> None:
             "Google OAuth not configured; dev auth %s",
             "ENABLED (login as %s)" % settings.dev_auth_email if settings.dev_auth else "DISABLED",
         )
+
+    # Wire the store + rebuildable index, rebuild from files, then watch.
+    store = NoteStore(settings)
+    conn = connect(settings.index_db_path)
+    init_schema(conn)
+    indexer = Indexer(conn, store)
+    set_runtime(store, indexer)
+    count = indexer.reindex_all()
+    log.info("Search index rebuilt from %d note(s)", count)
+
+    _watcher = IndexWatcher(settings, indexer)
+    _watcher.start()
+
+
+@app.on_event("shutdown")
+def _shutdown() -> None:
+    if _watcher is not None:
+        _watcher.stop()
 
 
 @app.get("/api/health")

@@ -61,6 +61,72 @@ export async function getHealth() {
   return request("/health");
 }
 
-// Phase 1+ will add: listNotes, getNote, saveNote, listTasks, ... all here.
+// --- Notes ----------------------------------------------------------------
 
-export default { getCurrentUser, loginUrl, logout, getHealth };
+export async function listNotes() {
+  return request("/notes");
+}
+
+export async function getNote(path) {
+  return request(`/notes/${path}`);
+}
+
+export async function saveNote(path, content) {
+  return request(`/notes/${path}`, { method: "PUT", body: { content } });
+}
+
+export async function deleteNote(path) {
+  return request(`/notes/${path}`, { method: "DELETE" });
+}
+
+// --- Daily notes ----------------------------------------------------------
+
+export async function getDaily(day) {
+  // day is "YYYY-MM-DD"; omit for today.
+  return request(day ? `/daily/${day}` : "/daily");
+}
+
+// --- Search ---------------------------------------------------------------
+
+export async function search(query, limit = 30) {
+  const params = new URLSearchParams({ q: query, limit: String(limit) });
+  return request(`/search?${params.toString()}`);
+}
+
+// --- Attachments ----------------------------------------------------------
+
+export async function uploadAttachment(file) {
+  const form = new FormData();
+  form.append("file", file);
+  const res = await fetch(`${BASE}/attachments`, {
+    method: "POST",
+    credentials: "same-origin",
+    body: form,
+  });
+  if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
+  return res.json();
+}
+
+export async function saveInk(name, svg) {
+  return request(`/attachments/ink/${name}`, { method: "PUT", body: { name, svg } });
+}
+
+export function attachmentUrl(name) {
+  return `${BASE}/attachments/${name}`;
+}
+
+export default {
+  getCurrentUser,
+  loginUrl,
+  logout,
+  getHealth,
+  listNotes,
+  getNote,
+  saveNote,
+  deleteNote,
+  getDaily,
+  search,
+  uploadAttachment,
+  saveInk,
+  attachmentUrl,
+};

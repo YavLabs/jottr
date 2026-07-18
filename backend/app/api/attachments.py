@@ -75,4 +75,6 @@ def get_attachment(name: str, settings: Settings = Depends(get_settings)) -> Fil
     target = _resolve(settings, name)
     if not target.is_file():
         raise HTTPException(status_code=404, detail="Attachment not found")
-    return FileResponse(target)
+    # Ink SVGs are overwritten in place when re-edited; don't let a stale copy
+    # linger in the browser cache.
+    return FileResponse(target, headers={"Cache-Control": "no-cache"})
